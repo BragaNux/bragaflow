@@ -154,6 +154,31 @@ A sequência geral do projeto é esta:
 6. `factory/` e `cache/` entram quando a lógica precisa de criação de objetos ou otimização em memória.
 7. `util/` suporta as demais camadas com pequenas funções auxiliares.
 
+## CRUD e métodos HTTP
+
+CRUD é a base das operações mais comuns de um sistema:
+
+- Create: cria um dado novo, como cadastrar um usuário.
+- Read: busca ou lê os dados, como listar usuários ou ver um perfil.
+- Update: altera um dado existente.
+- Delete: apaga um dado permanentemente, como excluir uma conta.
+
+No projeto web, isso normalmente aparece ligado aos métodos HTTP:
+
+- POST: usado para criar um novo registro.
+- GET: usado para consultar ou listar dados.
+- PUT: usado para substituir o dado inteiro por uma nova versão.
+- PATCH: usado para alterar só uma parte do dado.
+- DELETE: usado para remover um registro.
+
+Resumo rápido:
+
+- POST cria.
+- GET lê.
+- PUT substitui tudo.
+- PATCH altera só uma parte.
+- DELETE remove.
+
 ## Critérios de organização usados no projeto
 
 - Cada camada tem uma responsabilidade principal.
