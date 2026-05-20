@@ -1,13 +1,17 @@
-# Organização do Projeto MongoJava
+# BragaFlow Atlas - Organização do Projeto
 
-Este arquivo descreve como o projeto foi organizado por pastas, qual a responsabilidade de cada parte e o que cada diretório deve conter para manter o código limpo e fácil de evoluir.
+Este documento junta a visão geral do projeto, a divisão de pastas e o resumo dos padrões usados, sem repetir informação desnecessária.
 
 ## Visão geral
 
-O projeto foi dividido em camadas para separar responsabilidades:
+BragaFlow Atlas é um projeto em Java com MongoDB Atlas para praticar CRUD, orientação a objetos e padrões criacionais, com uma interface web simples para testes. O trabalho foi montado para conectar Java ao MongoDB, fazer operações reais de inserir, consultar, atualizar e remover dados, usar Singleton em cache, aplicar Factory Method nas entregas e organizar tudo em uma estrutura fácil de manter.
 
-- `App.java` inicia o servidor HTTP e registra a aplicação.
-- `config/` concentra a configuração de conexão com o MongoDB.
+## Como o projeto foi organizado
+
+O código foi separado em camadas para manter cada responsabilidade no lugar certo:
+
+- `App.java` inicia o servidor HTTP.
+- `config/` concentra a conexão com o MongoDB e outras configurações.
 - `domain/` guarda as entidades do sistema.
 - `repository/` faz o acesso ao banco.
 - `service/` aplica regras de negócio.
@@ -16,137 +20,19 @@ O projeto foi dividido em camadas para separar responsabilidades:
 - `cache/` mantém dados temporários em memória.
 - `util/` reúne funções auxiliares reutilizáveis.
 - `web/` contém o frontend estático.
-- `docs/` concentra documentação do projeto.
+- `docs/` concentra a documentação do projeto.
 
 ## O que deve existir em cada pasta
 
-### `config/`
+`config/` deve guardar a classe de conexão com o MongoDB, leitura de variáveis de ambiente e constantes globais. `domain/` deve conter classes simples como `User`, `Product`, `Freight` e `Delivery`, com atributos, construtores e getters/setters.
 
-Fica responsável por arquivos de configuração, como conexão com o banco, portas, credenciais e parâmetros globais da aplicação.
+`repository/` é a camada de consultas, inserções, atualizações e remoções no MongoDB. `service/` centraliza validações e regras de negócio. `api/` deve apenas ler método HTTP, parâmetros, corpo da requisição e montar a resposta.
 
-Exemplos do que deve ficar aqui:
-- classe de conexão com o MongoDB;
-- leitura de variáveis de ambiente, se existirem;
-- constantes de configuração que não fazem parte da regra de negócio.
+`factory/` serve para criar tipos diferentes de logística, como caminhão, navio, drone e trem, sem espalhar essa decisão pelo sistema. `cache/` guarda informações temporárias para reduzir consultas repetidas ao banco. `util/` fica para conversões, formatações e pequenos helpers. `web/` reúne o frontend estático, e `docs/` guarda a documentação complementar.
 
-Evite colocar aqui:
-- regras de CRUD;
-- lógica de tela;
-- código de rotas HTTP.
+## Como as camadas se conectam
 
-### `domain/`
-
-Guarda as classes que representam os dados principais do sistema.
-
-Exemplos:
-- `User`;
-- `Product`;
-- `Freight`;
-- `Delivery`.
-
-Essas classes devem ser simples e conter principalmente atributos, construtores, getters, setters e, quando necessário, pequenas validações de modelo.
-
-### `repository/`
-
-É a camada que conversa diretamente com o MongoDB.
-
-Aqui entram:
-- consultas;
-- inserções;
-- atualizações;
-- remoções;
-- busca por filtros e coleções.
-
-Boa prática para essa pasta:
-- não colocar regra de negócio complexa;
-- não montar resposta HTTP;
-- não misturar leitura de banco com tratamento de interface.
-
-### `service/`
-
-Centraliza as regras de negócio do projeto.
-
-É o lugar certo para:
-- validar dados antes de salvar;
-- decidir se uma operação pode ou não acontecer;
-- tratar regras específicas de usuário, produto, frete e entrega;
-- combinar dados de mais de um repository quando necessário.
-
-Essa camada existe para evitar que os handlers da API fiquem grandes demais.
-
-### `api/`
-
-Contém os handlers HTTP que recebem as requisições, chamam a service correta e montam a resposta final.
-
-Aqui devem ficar:
-- leitura de método HTTP;
-- leitura de parâmetros e corpo da requisição;
-- envio de status code;
-- resposta em JSON ou texto;
-- pequenos ajustes de cabeçalho.
-
-O ideal é que a pasta `api/` não tenha regras pesadas de negócio. Ela deve apenas coordenar a comunicação entre o cliente e as camadas internas.
-
-### `factory/`
-
-Armazena as classes responsáveis pela criação de objetos com base em um tipo escolhido em tempo de execução.
-
-No projeto, essa pasta serve para:
-- criar tipos diferentes de logística;
-- isolar a lógica de escolha entre avião, caminhão, navio, trem e drone;
-- manter a criação dos objetos mais organizada.
-
-### `cache/`
-
-Guarda caches em memória para reduzir chamadas repetidas ao banco.
-
-Neste projeto, a ideia é usar essa pasta para:
-- armazenar dados consultados com frequência;
-- evitar leitura repetida do MongoDB;
-- centralizar singleton ou estruturas temporárias de apoio.
-
-Tudo que for armazenado aqui deve ser tratado como temporário.
-
-### `util/`
-
-É a pasta de apoio para funções pequenas e reutilizáveis.
-
-Exemplos:
-- conversão de JSON;
-- formatação de dados;
-- validações genéricas;
-- helpers para respostas ou leitura de texto.
-
-Se uma função começar a crescer demais, ela provavelmente pertence a outra camada.
-
-### `web/`
-
-Contém o frontend estático que permite testar o sistema pelo navegador.
-
-O que deve existir aqui:
-- `index.html`;
-- `styles.css`;
-- `app.js`;
-- imagens e arquivos de apoio em `assets/`.
-
-Essa pasta deve ficar isolada do backend para facilitar manutenção visual e testes rápidos.
-
-### `docs/`
-
-Área reservada para documentação complementar do projeto.
-
-Pode conter:
-- explicações da estrutura;
-- reflexão sobre o trabalho;
-- anotações da implementação;
-- decisões de arquitetura;
-- instruções específicas para execução ou avaliação.
-
-## Como as pastas se conectam
-
-A sequência geral do projeto é esta:
-
-1. `web/` envia ações do usuário ou a requisição vem direto para a API.
+1. `web/` envia ações do usuário ou a requisição chega diretamente à API.
 2. `api/` recebe a requisição HTTP.
 3. `service/` aplica a regra de negócio.
 4. `repository/` acessa o MongoDB.
@@ -163,13 +49,13 @@ CRUD é a base das operações mais comuns de um sistema:
 - Update: altera um dado existente.
 - Delete: apaga um dado permanentemente, como excluir uma conta.
 
-No projeto web, isso normalmente aparece ligado aos métodos HTTP:
+No projeto web, isso aparece ligado aos métodos HTTP:
 
-- POST: usado para criar um novo registro.
-- GET: usado para consultar ou listar dados.
-- PUT: usado para substituir o dado inteiro por uma nova versão.
-- PATCH: usado para alterar só uma parte do dado.
-- DELETE: usado para remover um registro.
+- POST: cria um novo registro.
+- GET: consulta ou lista dados.
+- PUT: substitui o dado inteiro por uma nova versão.
+- PATCH: altera só uma parte do dado.
+- DELETE: remove um registro.
 
 Resumo rápido:
 
@@ -179,24 +65,26 @@ Resumo rápido:
 - PATCH altera só uma parte.
 - DELETE remove.
 
-## Critérios de organização usados no projeto
+## Como os padrões foram usados
 
-- Cada camada tem uma responsabilidade principal.
-- O acesso ao banco fica separado da regra de negócio.
-- A API fica separada da criação de objetos e da lógica de cache.
-- O frontend estático fica isolado no diretório `web/`.
-- A documentação fica concentrada em `docs/`.
+O Singleton foi usado no cache global de usuários em `cache/UserCache.java`, com a ideia de responder primeiro do cache antes de consultar o MongoDB. Também existe `cache/FreightCache.java`, que ajuda a carregar o valor do frete para as classes de logística.
+
+O Factory Method ficou na pasta `factory/`, criando a entrega certa de acordo com o tipo escolhido. Isso ajuda a manter a criação dos objetos organizada e também alimenta a coleção `fretes`, que recebe os valores base de caminhão, navio, drone e trem. A coleção `produtos` também recebe seed inicial para permitir montar pedidos.
+
+As rotas da API usam `api/`, `service/` e `repository/` para separar acesso ao banco e regras de negócio. A pasta `web/` oferece uma interface simples para testar o sistema no navegador. O GitHub Copilot ajudou principalmente na montagem da estrutura, nos handlers repetitivos, no HTML/CSS e na organização geral.
 
 ## O que não misturar
 
-Para manter o projeto organizado, evite colocar:
+Para manter o projeto organizado, evite colocar SQL ou queries dentro de `web/`, regras de negócio dentro de `api/`, manipulação de requisições HTTP dentro de `repository/` e classes de domínio com lógica de acesso ao banco.
 
-- SQL, Mongo queries ou chamadas ao banco dentro de `web/`;
-- regras de negócio dentro de `api/`;
-- manipulação de requisições HTTP dentro de `repository/`;
-- classes de domínio cheias de lógica de acesso ao banco;
-- arquivos temporários fora de `cache/` ou `docs/`.
+## Como executar
+
+1. Compile com `javac -cp ".;lib/*" App.java`.
+2. Execute com `java -cp ".;lib/*" App`.
+3. Acesse `http://localhost:8080` no navegador.
+
+Se a porta estiver ocupada, identifique o processo com `netstat -ano | findstr :8080` e finalize o PID correspondente, ou rode em outra porta com `$env:PORT="9090"; java -cp ".;lib/*" App`.
 
 ## Resumo
 
-A estrutura atual foi pensada para deixar o projeto fácil de entender, testar e expandir. Cada pasta tem um papel claro, o que ajuda a evitar código misturado e facilita a manutenção quando novas funcionalidades forem adicionadas.
+A estrutura foi pensada para deixar o projeto fácil de entender, testar e expandir. Cada pasta tem um papel claro, o que evita código misturado e facilita a manutenção quando novas funcionalidades forem adicionadas.
