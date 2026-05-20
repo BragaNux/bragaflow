@@ -1,0 +1,10 @@
+Perguntas de reflexão
+
+1. Qual padrão foi mais fácil de integrar ao banco?
+Resposta: O Singleton do cache de usuários foi o mais tranquilo. Depois dele, o cache de fretes também encaixou bem porque só carrega a coleção uma vez e deixa o valor do frete pronto para uso.
+
+2. Como o GitHub Copilot ajudou?
+Resposta: Ele ajudou bastante a montar a estrutura dos arquivos, repetir o padrão dos handlers, acelerar a parte do frontend e ajustar os vários pontos repetitivos do CRUD com MongoDB.
+
+3. Qual padrão apresentou maior complexidade?
+Resposta: O Factory Method foi o mais trabalhoso, porque precisei separar os tipos de entrega, ligar as classes `Caminhao`, `Navio`, `Drone`, `Trem` e `LogisticaAerea` com o cache de fretes e ainda conectar isso com o CRUD dos pedidos.

@@ -1,0 +1,426 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BragaFlow Delivery — SaaS Inteligente</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="theme-color" content="#0B3D91">
+    
+</head>
+<body>
+
+    <!-- ══════════════════════════════════
+         LOGIN PAGE
+    ══════════════════════════════════ -->
+    <div id="page-login" class="login-wrapper active">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="/assets/braga_512x512.png" alt="BragaFlow" class="login-logo">
+                <h1>BragaFlow</h1>
+                <p>Delivery SaaS Inteligente</p>
+            </div>
+
+            <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginUsername">Usuário</label>
+                    <input type="text" id="loginUsername" placeholder="Usuário" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Entrar</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Demo: brayan / senha123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         APP
+    ══════════════════════════════════ -->
+    <div id="app-wrapper" class="app-wrapper" style="display:none;">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="drawer-toggle" onclick="toggleDrawer()" aria-label="Menu"><span class="material-icons">menu</span></button>
+                <div class="header-brand">
+                    <img src="/assets/braga_512x512.png" alt="BragaFlow" class="header-logo">
+                    <div class="brand-info">
+                        <h2>BragaFlow</h2>
+                        <p id="userDisplay" class="user-display">Usuário</p>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-logout" onclick="handleLogout()">Sair</button>
+            </div>
+        </header>
+
+        <div class="app-body">
+
+            <!-- Drawer / Sidebar -->
+            <aside class="drawer" id="drawer">
+                <nav class="drawer-nav">
+                    <button class="drawer-item active" onclick="showPage('dashboard')">
+                        <span class="drawer-icon material-icons">dashboard</span>
+                        <span class="drawer-label">Dashboard</span>
+                    </button>
+                    <button class="drawer-item" onclick="showPage('deliveries')">
+                        <span class="drawer-icon material-icons">local_shipping</span>
+                        <span class="drawer-label">Entregas</span>
+                    </button>
+                    <button class="drawer-item" onclick="showPage('users')">
+                        <span class="drawer-icon material-icons">people</span>
+                        <span class="drawer-label">Usuários</span>
+                    </button>
+                    <button class="drawer-item" onclick="showPage('gallery')">
+                        <span class="drawer-icon material-icons">palette</span>
+                        <span class="drawer-label">Galeria</span>
+                    </button>
+                    <button class="drawer-item" onclick="openAboutDialog()">
+                        <span class="drawer-icon material-icons">info</span>
+                        <span class="drawer-label">Sobre</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <div id="drawerBackdrop" style="display:none;" onclick="closeDrawer()"></div>
+
+            <!-- Main content -->
+            <main class="app-main">
+
+                <!-- DASHBOARD -->
+                <section id="page-dashboard" class="page-content active">
+                    <div class="page-header">
+                        <h1><span class="material-icons" style="vertical-align:middle; margin-right:.4rem">dashboard</span>Dashboard</h1>
+                        <p>Visão geral da operação</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalDeliveries">0</div>
+                            <div class="stat-label">Entregas Totais</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalRevenue">R$ 0</div>
+                            <div class="stat-label">Faturamento</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Usuários</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgFreight">R$ 0</div>
+                            <div class="stat-label">Frete Médio</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Últimas Entregas</h3>
+                        <div id="recentDeliveries" class="deliveries-list">
+                            <p class="empty-state">Nenhuma entrega registrada</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DELIVERIES -->
+                <section id="page-deliveries" class="page-content">
+                    <div class="page-header">
+                        <h1><span class="material-icons" style="vertical-align:middle; margin-right:.4rem">local_shipping</span>Gerenciar Entregas</h1>
+                        <p>Crie e acompanhe entregas com frete calculado</p>
+                    </div>
+
+                    <div class="two-column-layout">
+                        <div class="card">
+                            <h3><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">add_circle</span>Criar Entrega</h3>
+                            <div class="form-group">
+                                <label for="freightCode">Tipo de Frete</label>
+                                <select id="freightCode" class="form-input" onchange="updateDeliverySummary()">
+                                    <option value="">Carregando fretes...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="deliveryCargo">Descrição do Pedido</label>
+                                <input id="deliveryCargo" placeholder="ex: Pedido de eletrônicos" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="deliveryDate">Data</label>
+                                <input id="deliveryDate" type="date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Produtos do Pedido</label>
+                                <div id="productCatalog" class="product-catalog">
+                                    <p class="empty-state">Carregando produtos...</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Resumo do Frete</label>
+                                <div id="freightSummary" class="freight-summary">
+                                    Selecione um frete e produtos para ver o total.
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button onclick="addDelivery()" class="btn-primary">Registrar Entrega</button>
+                                <button onclick="clearForms()" class="btn-secondary">Limpar</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">assignment</span>Entregas Registradas</h3>
+                            <div class="form-actions" style="margin-top:0; margin-bottom:.75rem;">
+                                <button onclick="listDeliveries()" class="btn-secondary btn-full">Recarregar</button>
+                            </div>
+                            <div id="deliveriesList" class="deliveries-list">
+                                <p class="empty-state">Clique em "Recarregar" para carregar</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">receipt_long</span>Resposta da API</h3>
+                        <div class="console-toolbar">
+                            <button onclick="copyOutput()" class="btn-secondary">Copiar</button>
+                            <span class="console-label">JSON</span>
+                        </div>
+                        <pre id="output">Aguardando requisição...</pre>
+                    </div>
+                </section>
+
+                <!-- USERS -->
+                <section id="page-users" class="page-content">
+                    <div class="page-header">
+                        <h1><span class="material-icons" style="vertical-align:middle; margin-right:.4rem">people</span>Gerenciar Usuários</h1>
+                        <p>Crie e gerencie usuários do sistema</p>
+                    </div>
+
+                    <div class="two-column-layout">
+                        <div class="card">
+                            <h3><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">person_add</span>Criar Usuário</h3>
+                            <div class="form-group">
+                                <label for="userUsername">Username</label>
+                                <input id="userUsername" placeholder="john_doe" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="userEmail">Email</label>
+                                <input id="userEmail" placeholder="john@example.com" class="form-input">
+                            </div>
+                            <div class="form-actions">
+                                <button onclick="addUser()" class="btn-primary">Criar Usuário</button>
+                                <button onclick="listUsers()" class="btn-secondary">Listar Todos</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">search</span>Buscar / Atualizar</h3>
+                            <div class="form-group">
+                                <label for="userUsernameSearch">Username</label>
+                                <input id="userUsernameSearch" placeholder="Buscar usuário" class="form-input">
+                            </div>
+                            <div class="form-actions">
+                                <button onclick="getUser()" class="btn-primary">Buscar</button>
+                                <button onclick="updateUser()" class="btn-primary">Atualizar</button>
+                                <button onclick="deleteUser()" class="btn-danger">Remover</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">receipt_long</span>Resposta da API</h3>
+                        <div class="console-toolbar">
+                            <button onclick="copyOutput()" class="btn-secondary">Copiar</button>
+                            <span class="console-label">JSON</span>
+                        </div>
+                        <pre id="output-users">Aguardando requisição...</pre>
+                    </div>
+                </section>
+
+                <!-- GALLERY -->
+                <section id="page-gallery" class="page-content">
+                    <div class="page-header">
+                        <h1><span class="material-icons" style="vertical-align:middle; margin-right:.4rem">palette</span>Galeria</h1>
+                        <p>Apresentação do projeto</p>
+                    </div>
+
+                    <!-- Hero banner — limitado a 320px de altura -->
+                    <div class="banner-container">
+                        <img src="/assets/braga_hero_banner_1672x941.png" alt="BragaFlow Hero Banner" class="banner-hero">
+                    </div>
+
+                    <!-- Cards de galeria — imagens com altura fixa -->
+                    <div class="gallery-grid">
+                        <div class="card">
+                            <img src="/assets/braga_foto_perfil_1254x1254.png" alt="Foto de Perfil BragaFlow" class="gallery-img">
+                            <h3 style="font-size:.9rem; margin-bottom:.25rem;">Perfil</h3>
+                            <p style="font-size:.8rem; color:var(--text-muted);">BragaFlow Atlas — Sistema de Delivery SaaS</p>
+                        </div>
+                        <div class="card">
+                            <img src="/assets/braga_banner_identidade_visual_1983x793.png" alt="Identidade Visual BragaFlow" class="gallery-img">
+                            <h3 style="font-size:.9rem; margin-bottom:.25rem;">Identidade Visual</h3>
+                            <p style="font-size:.8rem; color:var(--text-muted);">Sistema de cores e branding profissional</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Padrões Implementados</h3>
+                        <div class="patterns-grid">
+                            <div class="pattern-item">
+                                <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">track_changes</span>Singleton</strong>
+                                <p>Cache TTL de usuários</p>
+                            </div>
+                            <div class="pattern-item">
+                                <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">factory</span>Factory Method</strong>
+                                <p>Criação de entregas por transporte</p>
+                            </div>
+                            <div class="pattern-item">
+                                <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">inventory_2</span>Repository</strong>
+                                <p>Acesso ao banco de dados</p>
+                            </div>
+                            <div class="pattern-item">
+                                <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">settings</span>Service</strong>
+                                <p>Lógica de negócio</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div><!-- /.app-body -->
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BragaFlow</h4>
+                    <p>Delivery SaaS Inteligente com padrões Java</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Tecnologia</h4>
+                    <ul>
+                        <li>Java + MongoDB Atlas</li>
+                        <li>HttpServer nativo</li>
+                        <li>Padrões criacionais</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Padrões</h4>
+                    <ul>
+                        <li>Singleton</li>
+                        <li>Factory Method</li>
+                        <li>Repository Pattern</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 BragaFlow. Todos os direitos reservados.</p>
+            </div>
+        </footer>
+
+    </div><!-- /#app-wrapper -->
+
+    <!-- About Dialog -->
+    <dialog id="aboutDialog" class="project-dialog">
+        <div class="dialog-shell">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow"><span class="material-icons" style="vertical-align:middle; margin-right:.25rem">info</span>Informações</p>
+                    <h2>Sobre BragaFlow</h2>
+                </div>
+                <button type="button" class="dialog-close" onclick="closeAboutDialog()"><span class="material-icons">close</span></button>
+            </div>
+            <section class="dialog-content">
+                <h3>O que foi desenvolvido</h3>
+                <ul class="dialog-list">
+                    <li><span class="material-icons" style="vertical-align:middle; color:var(--yellow); margin-right:.45rem; font-size:1rem">check_circle</span>SaaS de Delivery com cálculo de frete</li>
+                    <li><span class="material-icons" style="vertical-align:middle; color:var(--yellow); margin-right:.45rem; font-size:1rem">check_circle</span>Sistema de login com autenticação</li>
+                    <li><span class="material-icons" style="vertical-align:middle; color:var(--yellow); margin-right:.45rem; font-size:1rem">check_circle</span>Dashboard com estatísticas</li>
+                    <li><span class="material-icons" style="vertical-align:middle; color:var(--yellow); margin-right:.45rem; font-size:1rem">check_circle</span>CRUD de entregas e usuários</li>
+                    <li><span class="material-icons" style="vertical-align:middle; color:var(--yellow); margin-right:.45rem; font-size:1rem">check_circle</span>MongoDB Atlas como banco</li>
+                    <li><span class="material-icons" style="vertical-align:middle; color:var(--yellow); margin-right:.45rem; font-size:1rem">check_circle</span>Design responsivo e profissional</li>
+                </ul>
+                <h3>Padrões de Design</h3>
+                    <div class="patterns-grid">
+                    <div class="pattern-item">
+                        <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">track_changes</span>Singleton</strong>
+                        <p>Cache com TTL</p>
+                    </div>
+                    <div class="pattern-item">
+                        <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">factory</span>Factory</strong>
+                        <p>Entregas</p>
+                    </div>
+                    <div class="pattern-item">
+                        <strong><span class="material-icons" style="vertical-align:middle; margin-right:.35rem">inventory_2</span>Repository</strong>
+                        <p>Dados</p>
+                    </div>
+                </div>
+            </section>
+            <div class="dialog-footer">
+                <button type="button" onclick="closeAboutDialog()" class="btn-primary">Entendido</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="/app.js"></script>
+
+    <script>
+    /* ── Drawer toggle ── */
+    function toggleDrawer() {
+        const drawer = document.getElementById('drawer');
+        const backdrop = document.getElementById('drawerBackdrop');
+        const isOpen = drawer.classList.toggle('open');
+        if (backdrop) backdrop.style.display = isOpen ? 'block' : 'none';
+    }
+
+    function closeDrawer() {
+        const drawer = document.getElementById('drawer');
+        const backdrop = document.getElementById('drawerBackdrop');
+        drawer.classList.remove('open');
+        if (backdrop) backdrop.style.display = 'none';
+    }
+
+    /* ── Page navigation ── */
+    function showPage(name) {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.drawer-item').forEach(b => b.classList.remove('active'));
+        const page = document.getElementById('page-' + name);
+        if (page) page.classList.add('active');
+        document.querySelectorAll('.drawer-item').forEach(b => {
+            if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(name)) {
+                b.classList.add('active');
+            }
+        });
+        if (window.innerWidth <= 640) {
+            document.getElementById('drawer').classList.remove('open');
+        }
+    }
+
+    /* ── Dialog ── */
+    function openAboutDialog()  {
+        const dlg = document.getElementById('aboutDialog');
+        if (!dlg) return;
+        if (typeof dlg.showModal === 'function') {
+            dlg.showModal();
+        } else {
+            // fallback for browsers without <dialog> support
+            dlg.setAttribute('open', '');
+            dlg.classList.add('open');
+        }
+    }
+    function closeAboutDialog() {
+        const dlg = document.getElementById('aboutDialog');
+        if (!dlg) return;
+        if (typeof dlg.close === 'function') {
+            try { dlg.close(); } catch(e) { dlg.removeAttribute('open'); dlg.classList.remove('open'); }
+        } else {
+            dlg.removeAttribute('open');
+            dlg.classList.remove('open');
+        }
+    }
+    </script>
+</body>
+</html>
