@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase;
 
 public final class MongoConnection implements AutoCloseable {
     private static MongoConnection instance;
+    // Essa linha informa dados de credencias ao mongodb, mas após o commit do projeto essas informações já não são mais validas, é sempre bom verificar os commits e as informações que podem vazar.
     private static final String URI = "mongodb+srv://devbrayan:ieNdWcmx9vJMUVgy@clusterteste.0wiph78.mongodb.net/?appName=ClusterTeste";
 
     private final MongoClient client;
