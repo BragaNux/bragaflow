@@ -79,9 +79,10 @@ Para manter o projeto organizado, evite colocar SQL ou queries dentro de `web/`,
 
 ## Como executar
 
-1. Compile com `javac -cp ".;lib/*" App.java`.
-2. Execute com `java -cp ".;lib/*" App`.
-3. Acesse `http://localhost:8080` no navegador.
+1. Defina a variável de ambiente `MONGODB_URI` com a string de conexão do MongoDB Atlas (no PowerShell: `$env:MONGODB_URI="mongodb+srv://..."`).
+2. Compile com `javac -cp ".;lib/*" App.java`.
+3. Execute com `java -cp ".;lib/*" App`.
+4. Acesse `http://localhost:8080` no navegador.
 
 Se a porta estiver ocupada, identifique o processo com `netstat -ano | findstr :8080` e finalize o PID correspondente, ou rode em outra porta com `$env:PORT="9090"; java -cp ".;lib/*" App`.
 

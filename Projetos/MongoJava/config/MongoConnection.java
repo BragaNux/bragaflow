@@ -6,15 +6,19 @@ import com.mongodb.client.MongoDatabase;
 
 public final class MongoConnection implements AutoCloseable {
     private static MongoConnection instance;
-    // Essa linha informa dados de credencias ao mongodb, mas após o commit do projeto essas informações já não são mais validas, é sempre bom verificar os commits e as informações que podem vazar.
-    private static final String URI = "mongodb+srv://devbrayan:ieNdWcmx9vJMUVgy@clusterteste.0wiph78.mongodb.net/?appName=ClusterTeste";
+    // A string de conexão vem da variável de ambiente MONGODB_URI, para nenhuma credencial ficar no código.
+    private static final String URI_ENV = "MONGODB_URI";
 
     private final MongoClient client;
     private final MongoDatabase database;
 
     private MongoConnection() {
+        String uri = System.getenv(URI_ENV);
+        if (uri == null || uri.trim().isEmpty()) {
+            throw new IllegalStateException("Defina a variável de ambiente " + URI_ENV + " com a string de conexão do MongoDB Atlas.");
+        }
         String databaseName = System.getenv().getOrDefault("MONGODB_DB", "teste");
-        this.client = MongoClients.create(URI);
+        this.client = MongoClients.create(uri);
         this.database = client.getDatabase(databaseName);
     }
 
